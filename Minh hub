@@ -1,0 +1,509 @@
+repeat wait()
+    pcall(function()
+        if getgenv().Marines then
+            for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Marines.Frame.ViewportFrame.TextButton.Activated)) do
+                v.Function()
+            end
+        else
+            for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Pirates.Frame.ViewportFrame.TextButton.Activated)) do
+                v.Function()
+            end
+        end
+    end)
+until game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam") and   not  game:GetService("Players").LocalPlayer.PlayerGui.Main:WaitForChild("ChooseTeam").Visible or not game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam")
+repeat wait()
+until game:GetService("Players").LocalPlayer:FindFirstChild("WeaponAssetCache")
+
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+wait(1)
+vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
+
+getgenv().OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Apsara1920/UiLib/refs/heads/main/gay.lua')))()
+local Window = OrionLib:MakeWindow({Name = "Minh Hub",IntroText = "Minh Library"})
+local Tab7 = Window:MakeTab({
+	Name = "Shop",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab11 = Window:MakeTab({
+	Name = "Local Player",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab3 = Window:MakeTab({
+	Name = "DF and Raid",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tab8 = Window:MakeTab({
+	Name = "Status and Server",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab9 = Window:MakeTab({
+	Name = "Upgrade Race",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab2 = Window:MakeTab({
+	Name = "Misc",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab4 = Window:MakeTab({
+	Name = "Webhook",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab5 = Window:MakeTab({
+	Name = "Get Items",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab6 = Window:MakeTab({
+	Name = "PVP",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local Tab10 = Window:MakeTab({
+	Name = "Settings",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+local plr = game.Players.LocalPlayer
+local CommF = game.ReplicatedStorage.Remotes["CommF_"]
+local Settings = {}
+local HttpService = game:GetService("HttpService")
+local FolderName = "Minh Hub"
+local SaveFileNameGame = "-BloxFruit.json"
+local SaveFileName = game.Players.LocalPlayer.Name..SaveFileNameGame
+local SettingHopServer = {}
+local DefaultSettingHopServer = {}
+function SaveSettings(fff,fff2)
+    if fff~=nil then
+        Settings[fff] = fff2
+    end
+    HttpService = game:GetService("HttpService")
+    if not isfolder(FolderName) then
+        makefolder(FolderName)
+    end
+    writefile(FolderName.."/" .. SaveFileName, HttpService:JSONEncode(Settings))
+end
+
+function ReadSetting()
+local s,e = pcall(function()
+    HttpService = game:GetService("HttpService")
+    if not isfolder(FolderName) then
+        makefolder(FolderName)
+    end
+    return HttpService:JSONDecode(readfile(FolderName.."/" .. SaveFileName))
+end)
+if s then return e
+else
+    SaveSettings()
+    return ReadSetting()
+end
+end
+Settings = ReadSetting()
+if not pcall(function() readfile(FolderName.."/" .. "Jobid.json") end) then
+    writefile(FolderName.."/" .. "Jobid.json", game:GetService("HttpService"):JSONEncode(DefaultSettingHopServer))
+end
+function CheckJobIdServer()
+    local mmb = {}
+    for i,v in next,game:GetService("HttpService"):JSONDecode(readfile(FolderName.."/" .. "Jobid.json")) do
+        table.insert(mmb,i) 
+    end
+    return mmb 
+end
+function HopServer()
+    local function Hop()
+        for i=1,100 do
+            local huhu = game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer(i)
+            for k,v in pairs(huhu) do
+                if v.Count >= 10 and k ~= game.JobId and not table.find(CheckJobIdServer(),k) then
+                    game:GetService("ReplicatedStorage").__ServerBrowser:InvokeServer("teleport",k)
+                    writefile(FolderName.."/" .. "Jobid.json", game:GetService("HttpService"):JSONEncode(SettingHopServer))
+                end
+            end
+        end
+    end
+    local v14 = require(game:GetService("ReplicatedStorage").Notification)
+    v14.new("<Color=Red>Minh Hub : Wait "..(tostring(Settings["Delay HopServer"]) or "15").."s[Hop Server]<Color=/>"):Display()
+    while wait(Settings["Delay HopServer"] or 15) do
+        local v14 = require(game:GetService("ReplicatedStorage").Notification)
+        v14.new("<Color=Red>Minh Hub : Hop Server<Color=/>"):Display()
+        Hop()
+    end
+end
+SettingHopServer = HttpService:JSONDecode(readfile(FolderName.."/" .. "Jobid.json"))
+SettingHopServer[game.JobId] = true
+local Section = Tab:AddSection({
+	Name = "Setting Farm"
+})
+Tab:AddDropdown({
+	Name = "Select Weapon",
+	Default =  Settings["Select Weapon"] or "Melee",
+	Options = {'Blox Fruit', 'Sword', 'Melee'},
+    Flag = "Select Weapon",
+	Callback = function(Value)
+		SaveSettings("Select Weapon",Value)
+	end    
+})
+Tab:AddToggle({
+	Name = "Auto Buso",
+	Default = Settings["Auto Buso"] or true,
+    Flag = "Auto Buso",
+    Callback = function(Value)
+        SaveSettings("Auto Buso",Value)
+	end    
+})
+Tab:AddToggle({
+	Name = "Auto Turn On Haki Observation",
+	Default = Settings["Auto Turn On Haki Observation"] or false,
+    Flag = "Auto Turn On Haki Observation",
+    Callback = function(Value)
+        SaveSettings("Auto Turn On Haki Observation",Value)
+	end    
+})
+Tab:AddToggle({
+	Name = "Double Quest",
+	Default = Settings["Double Quest"] or true,
+    Flag = "Double Quest",
+	Callback = function(Value)
+        SaveSettings("Double Quest",Value)
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Reset Teleport[Not Use Get Item Or ...]",
+	Default = Settings["Reset Teleport"] or false,
+    Flag = "Reset Teleport",
+	Callback = function(Value)
+        SaveSettings("Reset Teleport",Value)
+	end    
+})
+
+spawn(function()
+    while task.wait() do
+        if OrionLib.Flags["Auto Buso"].Value then
+            pcall(function() 
+                if not FFCMatch(plr.Character, "_BusoLayer1") and not plr.Character:FindFirstChild("HasBuso") then
+                    CommF:InvokeServer("Buso")
+                    task.wait(2)
+                end
+            end)
+        end
+    end
+end)
+spawn(function()
+    while  task.wait() do
+        if OrionLib.Flags["Auto Turn On Haki Observation"].Value then
+            pcall(function() 
+                if not game.Players.LocalPlayer.PlayerGui.ScreenGui:FindFirstChild("ImageLabel") then
+                    game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                    game:GetService("VirtualInputManager"):SendKeyEvent(false, "E", false, game)
+                    task.wait(3)
+                end
+            end)
+        end
+    end
+end)
+Tab:AddToggle({
+    Name = "Auto Turn On Race v4",
+    Default = Settings["Auto Turn On Race v4"] or false,
+    Flag = "Auto Turn On Race v4",
+    Callback = function(Value)
+        SaveSettings("Auto Turn On Race v4",Value)
+    end    
+})
+spawn(function()
+    while  task.wait() do
+        if OrionLib.Flags["Auto Turn On Race v4"].Value then
+            pcall(function() 
+                if game.Players.LocalPlayer.Character:FindFirstChild("RaceEnergy") 
+                and game.Players.LocalPlayer.Character.RaceEnergy.Value >= 1 
+                and game.Players.LocalPlayer.Character:FindFirstChild("RaceTransformed") and not game.Players.LocalPlayer.Character.RaceTransformed.Value   then
+                    local args = {
+                        [1] = true
+                    }
+                    game:GetService("Players").LocalPlayer.Backpack.Awakening.RemoteFunction:InvokeServer(unpack(args))
+                end
+            end)
+        end
+    end
+end)
+Tab:AddToggle({
+    Name = "Fast Attack",
+    Default = Settings["Fast Attack"] or true,
+    Flag = "Fast Attack",
+    Callback = function(Value)
+        SaveSettings("Fast Attack",Value)
+    end    
+})
+Tab:AddToggle({
+    Name = "Auto Click",
+    Default = Settings["Auto Click"] or false,
+    Flag = "Auto Click",
+    Callback = function(Value)
+        SaveSettings("Auto Click",Value)
+    end    
+})
+Tab:AddDropdown({
+	Name = "Select Speed Attack",
+	Default =  Settings["Select Speed Attack"] or 0.1,
+	Options = { 0,0.1,0.15,0.2},
+    Flag = "Select Speed Attack",
+	Callback = function(Value)
+		SaveSettings("Select Speed Attack",Value)
+	end    
+})
+
+spawn(function()
+    loadstring([[
+        local env = getgenv()
+        local oldSkill
+        oldSkill = hookfunction(require(game.ReplicatedStorage.Util).BodyMover.Create,function(p3,p4, p5)
+            if p5.ID and env.OrionLib.Flags["No Stun"].Value then
+                p5.Duration = 0
+            end
+            return oldSkill(p3,p4, p5)
+        end)
+        require(game:GetService("ReplicatedStorage").Util.CameraShaker):Stop()
+        local CameraShakerR = require(game.ReplicatedStorage.Util.CameraShaker)
+        CameraShakerR:Stop()
+    ]])()
+end)
+loadstring([[
+    local MT = getrawmetatable(game)
+    local OldNameCall = MT.__namecall
+    setreadonly(MT, false)
+    MT.__namecall = newcclosure(function(self, ...)
+    local Method = getnamecallmethod()
+    local Args = {...}
+    if Method == 'FireServer' and self.Name == 'RemoteEvent' and getgenv().psskill and (getgenv().OrionLib.Flags["Auto Mastery"].Value or getgenv().OrionLib.Flags["Auto Seabeast"].Value or OrionLib.Flags["Auto Aimbot"].Value or SeabeastAim or autospamskillTrial ) then
+        if  #Args == 1 and typeof(Args[1]) == "Vector3" then
+            Args[1] = getgenv().psskill.Position
+        end
+        if #Args == 1 and typeof(Args[1]) == "CFrame" then
+            Args[1] = getgenv().psskill
+        end
+    end
+    return OldNameCall(self, unpack(Args))
+end)
+setreadonly(MT, true)]])()
+loadstring([[
+    local olddd
+    olddd = hookmetamethod(game, "__index", function(self, key)
+        if tostring(key):lower()== 'hit' and getgenv().psskill and ((getgenv().OrionLib.Flags["Select Method Mastery"].Value == "Gun" and getgenv().OrionLib.Flags["Auto Mastery"].Value) or OrionLib.Flags["Auto Aimbot"].Value) then
+            return getgenv().psskill
+        end
+    return olddd(self, key)
+end)]])()
+getgenv().CountAttack = 0
+loadstring([[
+    local env = getgenv()
+    local old
+    old = hookfunction(require(game:GetService("ReplicatedStorage").CombatFramework.RigLib).getBladeHits,function(...) 
+        local a,b = ...
+        local Magnitude = 50
+        if not env.Fastattack and not env.StartAutoAttack then 
+            Magnitude = 5
+        end
+        local returned = old(game.Players.LocalPlayer.Character,{game.Players.LocalPlayer.Character.HumanoidRootPart},Magnitude)
+        if env.StartAutoAttack then
+            local cac = {}
+            local hash = {}
+            for k, v in pairs(returned) do
+                if v.Parent:FindFirstChild("HumanoidRootPart") and not hash[v.Parent] then
+                    if v.Parent.Parent.Name == "Enemies" then
+                        table.insert(cac, v.Parent.HumanoidRootPart)
+                        hash[v.Parent] = true
+                    end
+                end
+            end
+            returned = cac
+        end
+        if #returned > 0  and env.Fastattack  then 
+            if env.CountAttack == 0  then
+                game:GetService("ReplicatedStorage").RigControllerEvent:FireServer("weaponChange",b[1].Parent.Parent.Name)
+                env.CountAttack = 1
+            else 
+                env.CountAttack = 0
+            end
+        end
+        return returned
+    end)
+]])()
+
+local up = getupvalues(require(game:GetService("Players").LocalPlayer.PlayerScripts.CombatFramework))
+local ret = up[2]
+function autoattack()
+    if game.Players.LocalPlayer.Character.Stun.Value == 0 then
+        spawn(function()
+            ret.activeController:attack()
+            ret.activeController.timeToNextAttack = 0
+            ret.activeController.attacking = false
+            ret.activeController.increment = 3
+        end)
+    end
+end
+spawn(function()
+    while task.wait() do 
+        pcall(function()
+            if OrionLib.Flags["Fast Attack"].Value then 
+                getgenv().Fastattack = true 
+            else
+                getgenv().Fastattack = false
+            end 
+        end)
+    end
+end)
+function DetectFastAttack()
+    getgenv().StartAutoAttack = true
+end
+local CountAttack = 0
+
+spawn(function()
+    --[[while task.task.wait() do 
+        pcall(function()
+            if getgenv().StartAutoAttack  then
+                autoattack()
+                task.task.wait(OrionLib.Flags["Select Speed Attack"].Value+0.02)
+                getgenv().StartAutoAttack = false 
+            end
+        end)
+    end]]
+    game:GetService("RunService").RenderStepped:connect(function()
+        if getgenv().StartAutoAttack  then
+            autoattack()
+            task.task.wait(OrionLib.Flags["Select Speed Attack"].Value+0.01)
+            getgenv().StartAutoAttack = false 
+        end
+    end)
+end)
+spawn(function()
+    while task.wait() do 
+        pcall(function()
+            if OrionLib.Flags["Auto Click"].Value  then
+                autoattack()
+            end
+        end)
+    end
+end)
+
+function poscheckspawn(pos)
+    dist = math.huge
+    local name
+    for i,v in next,game:GetService("Workspace")["_WorldOrigin"].PlayerSpawns.Pirates:GetChildren() do
+        if v:IsA("Model") then
+            local magnitude = (v.Part.Position - pos).magnitude
+            if magnitude < dist then
+                dist = magnitude
+                name = v
+            end
+        end
+    end
+    return name
+end
+if game.PlaceId == 7449423635 then 
+    TableLocations = {
+        ["Caslte On The Sea"] = Vector3.new(-5058.77490234375, 314.5155029296875, -3155.88330078125),
+        ["Hydra"] = Vector3.new(5756.83740234375, 610.4240112304688, -253.9253692626953),
+        ["Mansion"] = Vector3.new(-12463.8740234375, 374.9144592285156, -7523.77392578125),
+        ["Great Tree"] = Vector3.new(5314.58203125, 25.419387817382812, -125.94227600097656),
+        ["Temple Clock"] = Vector3.new(28282.5703125, 14896.8505859375, 105.1042709350586),
+    }
+elseif game.PlaceId == 2753915549 then
+    TableLocations = {
+        ["FishmanSea1"] =  game:GetService("Workspace").Map.TeleportSpawn.EntrancePoint.Position,
+        ["Island Sky 2"] =   game:GetService("Workspace").Map.SkyArea2.PathwayHouse.EntrancePoint.Position,
+        ["Island Sky 1"] = game:GetService("Workspace").Map.SkyArea1.PathwayTemple.ExitPoint.Position,
+    }
+elseif game.PlaceId == 4442272183 then
+    TableLocations = {
+        ["GhostShipInterior"] = game:GetService("Workspace").Map.GhostShipInterior.TeleportSpawn.Position
+    }
+end
+function toTarget(pos, targetPos, targetCFrame,TpInstant)
+    if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") and game.Players.LocalPlayer.Character.Humanoid.Sit then
+        getgenv().noclip = false
+        if getgenv().Tween then
+            getgenv().Tween:Pause()
+            getgenv().Tween:Cancel()
+        end
+        game.Players.LocalPlayer.Character.Humanoid.Sit = false
+        game.Players.LocalPlayer.Character.Humanoid.Jump = true
+        plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame*CFrame.new(0,10,0)
+        return 
+    end
+    local aaa = Settings["Tween Speed"] or 160
+    local tween_s = game:service"TweenService"
+    local info = TweenInfo.new((targetPos - pos).Magnitude/aaa, Enum.EasingStyle.Quad)
+    if game.PlaceId == 7449423635 and  (targetPos-Vector3.new(28609.392578125, 14896.533203125, 106.4216537475586)).Magnitude > 3000 and  (Vector3.new(28609.392578125, 14896.533203125, 106.4216537475586)-plr.Character.HumanoidRootPart.Position).Magnitude <= 3000 then 
+        getgenv().Tween = tween_s:Create(game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart"), TweenInfo.new((Vector3.new(28609.392578125, 14896.533203125, 106.4216537475586) - plr.Character.HumanoidRootPart.Position).Magnitude/aaa, Enum.EasingStyle.Quad), {CFrame = CFrame.new(28609.392578125, 14896.533203125, 106.4216537475586)})
+        getgenv().noclip = true
+        getgenv().Tween:Play()
+        if (Vector3.new(28609.392578125, 14896.533203125, 106.4216537475586)-plr.Character.HumanoidRootPart.Position).Magnitude < 8 then 
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("RaceV4Progress","Check")
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("RaceV4Progress","TeleportBack")
+            if getgenv().Tween then
+                getgenv().Tween:Pause()
+                getgenv().Tween:Cancel()
+            end
+        end
+        return
+    end
+    if game.PlaceId == 2753915549 and (targetPos-game:GetService("Workspace").Map.TeleportSpawn.EntrancePoint.Position).Magnitude > 3000 and  (game:GetService("Workspace").Map.TeleportSpawn.EntrancePoint.Position-plr.Character.HumanoidRootPart.Position).Magnitude <= 3000 then
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance",Vector3.new(3864.6884765625, 6.736950397491455, -1926.214111328125))
+        return 
+    elseif game.PlaceId == 4442272183 and (targetPos-game:GetService("Workspace").Map.GhostShipInterior.TeleportSpawn.Position).Magnitude > 3000 and  (game:GetService("Workspace").Map.GhostShipInterior.TeleportSpawn.Position-plr.Character.HumanoidRootPart.Position).Magnitude <= 3000 then
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance",game:GetService("Workspace").Map.GhostShip.TeleportSpawn.Position)
+        return 
+    end
+    if TableLocations then
+        for i,v2 in pairs(TableLocations) do
+            if  (targetPos-v2).Magnitude <= 3000 and  (targetPos-plr.Character.HumanoidRootPart.Position).Magnitude >= 3000 then
+                if getgenv().Tween then
+                    getgenv().Tween:Pause()
+                    getgenv().Tween:Cancel()
+                end
+                args = {
+                    "requestEntrance",
+                    v2,
+                }
+                game.ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(args))
+                return 
+            end
+        end
+    end
+    if (not OrionLib.Flags["Auto Raid and Find DF"].Value)  and (targetPos-pos).Magnitude >= 3000 and  OrionLib.Flags["Reset Teleport"].Value and poscheckspawn(targetPos).Name ~= game:GetService("Players").LocalPlayer.Data.LastSpawnPoint.Value   then
+        if getgenv().Tween then
+            getgenv().Tween:Pause()
+            getgenv().Tween:Cancel()
+        end
+        plr.Character.LastSpawnPoint.Disabled = true
+        local TimeReset = tick()
+        repeat task.wait()
+            plr.Character.LastSpawnPoint.Disabled = true
+            game.ReplicatedStorage.Remotes.CommF_:InvokeServer("SetLastSpawnPoint", poscheckspawn(targetPos).Name)
+            plr.Character.HumanoidRootPart.CFrame = poscheckspawn(targetPos).Part.CFrame
+            if tick()-TimeReset >= 3 and plr.Character.Humanoid.Health > 0 then
+                plr.Character.Humanoid.Health = 0
+                task.wait()
+                TimeReset = tick()
+            end
+        until poscheckspawn(targetPos).Name == game:GetService("Players").LocalPlayer.Data.LastSpawnPoint.Value or not OrionLib.Flags["Reset Teleport"].Value
+        plr.Character.Humanoid.Health = 0
+        repeat task.wait()
+        until plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Health > 0 
+        return
+    end
